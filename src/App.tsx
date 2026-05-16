@@ -368,7 +368,7 @@ const CoachesSection = () => {
         "상담 및 임상심리학 석사 / 교육공학 학사",
         "조직 문화 및 리더십 소통 전문가",
         "前 KT ACE강사 센터장",
-        "前 고은소아청소년과 학습발달심리센터 실장"
+        "前 고운소아청소년과 학습발달심리센터 실장"
       ],
       image: "/images/lee.png",
       position: "object-top"
