@@ -118,39 +118,65 @@ const Navbar = () => {
         </button>
       </div>
 
-        {/* Mobile Menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-brand-cream border-b border-brand-navy/10 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 md:hidden bg-brand-cream flex flex-col items-center justify-center"
           >
-            <div className="flex flex-col gap-8 p-10 items-center">
+            <button 
+              className="absolute top-8 right-6 text-brand-navy"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <X size={32} />
+            </button>
+            
+            <div className="flex flex-col gap-10 items-center">
+              <div className="mb-8 flex flex-col items-center leading-none gap-0.5 text-center">
+                <span className="text-3xl font-serif font-bold tracking-[0.15em] text-brand-navy">COAVE</span>
+                <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold opacity-80">Coaching Lab</span>
+              </div>
+              
               {navLinks.map((link) => (
                 <button 
                   key={link.name} 
                   type="button"
                   onClick={() => {
-                    scrollToSection(link.href.replace('#', ''));
-                    setTimeout(() => setIsMenuOpen(false), 100);
+                    setIsMenuOpen(false);
+                    // Add a tiny delay to wait for menu close/layout shift
+                    setTimeout(() => scrollToSection(link.href.replace('#', '')), 300);
                   }}
-                  className="text-sm uppercase tracking-[0.4em] font-bold text-brand-navy hover:text-brand-gold transition-colors cursor-pointer"
+                  className="text-lg uppercase tracking-[0.5em] font-bold text-brand-navy hover:text-brand-gold transition-colors"
                 >
                   {link.name}
                 </button>
               ))}
-              <button 
-                type="button"
-                onClick={() => {
-                  scrollToSection('contact');
-                  setTimeout(() => setIsMenuOpen(false), 100);
-                }}
-                className="w-full py-5 bg-brand-navy text-brand-cream uppercase tracking-widest font-bold text-xs hover:bg-brand-gold transition-colors rounded-sm"
-              >
-                Inquiry
-              </button>
+              <div className="mt-8 overflow-hidden rounded-sm">
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setTimeout(() => scrollToSection('contact'), 300);
+                  }}
+                  className="px-12 py-5 bg-brand-navy text-brand-cream uppercase tracking-widest font-bold text-sm hover:bg-brand-gold transition-colors"
+                >
+                  Inquiry
+                </button>
+              </div>
+            </div>
+            
+            <div className="absolute bottom-12 flex flex-col items-center gap-6">
+              <div className="flex gap-8 text-brand-navy/40">
+                <Instagram size={20} />
+                <Mail size={20} />
+                <Linkedin size={20} />
+              </div>
+              <p className="text-[9px] uppercase tracking-[0.3em] font-medium text-brand-navy/30">
+                &copy; {new Date().getFullYear()} Coave Coaching Lab
+              </p>
             </div>
           </motion.div>
         )}
