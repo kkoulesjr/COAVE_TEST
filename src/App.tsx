@@ -31,7 +31,7 @@ const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
   if (element) {
     const navbarHeight = 80;
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
     const offsetPosition = elementPosition - navbarHeight;
 
     window.scrollTo({
@@ -51,6 +51,15 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMenuOpen]);
+
   const navLinks = [
     { name: "About", href: "#about" },
     { name: "Coaches", href: "#coaches" },
@@ -60,128 +69,125 @@ const Navbar = () => {
   ];
 
   return (
-    <nav 
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled ? "bg-brand-cream/80 backdrop-blur-md py-4 shadow-sm" : "bg-transparent py-8"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-2 group cursor-pointer"
-          onClick={() => {
-            scrollToSection('home');
-            setTimeout(() => setIsMenuOpen(false), 100);
-          }}
-        >
-          <div className="flex flex-col items-center leading-none gap-0.5 text-center">
-            <span className="text-xl font-serif font-bold tracking-[0.15em] text-brand-navy">COAVE</span>
-            <span className="text-[7px] uppercase tracking-[0.4em] font-bold text-brand-gold opacity-80">Coaching Lab</span>
-          </div>
-        </motion.div>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10">
-          {navLinks.map((link, idx) => (
-            <motion.a
-              key={link.name}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection(link.href.replace('#', ''));
-              }}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="text-xs uppercase tracking-widest font-medium hover:text-brand-gold transition-colors cursor-pointer"
-            >
-              {link.name}
-            </motion.a>
-          ))}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 border border-brand-navy text-xs uppercase tracking-widest font-semibold hover:bg-brand-navy hover:text-brand-cream transition-all cursor-pointer"
-            onClick={() => scrollToSection('contact')}
+    <>
+      <nav 
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+          isScrolled ? "bg-brand-cream/90 backdrop-blur-md py-4 shadow-sm" : "bg-transparent py-8"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-2 group cursor-pointer"
+            onClick={() => {
+              scrollToSection('home');
+              setIsMenuOpen(false);
+            }}
           >
-            Inquiry
-          </motion.button>
+            <div className="flex flex-col items-center leading-none gap-0.5 text-center">
+              <span className="text-xl font-serif font-bold tracking-[0.15em] text-brand-navy">COAVE</span>
+              <span className="text-[7px] uppercase tracking-[0.4em] font-bold text-brand-gold opacity-80">Coaching Lab</span>
+            </div>
+          </motion.div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-10">
+            {navLinks.map((link, idx) => (
+              <motion.a
+                key={link.name}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection(link.href.replace('#', ''));
+                }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="text-xs uppercase tracking-widest font-medium hover:text-brand-gold transition-colors cursor-pointer"
+              >
+                {link.name}
+              </motion.a>
+            ))}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2 border border-brand-navy text-xs uppercase tracking-widest font-semibold hover:bg-brand-navy hover:text-brand-cream transition-all cursor-pointer"
+              onClick={() => scrollToSection('contact')}
+            >
+              Inquiry
+            </motion.button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button 
+            className="md:hidden text-brand-navy hover:text-brand-gold transition-colors relative z-[110]" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
         </div>
+      </nav>
 
-        {/* Mobile Toggle */}
-        <button 
-          className="md:hidden text-brand-navy hover:text-brand-gold transition-colors" 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 md:hidden bg-brand-cream flex flex-col items-center justify-center"
+            key="mobile-menu"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[100] bg-brand-cream md:hidden flex flex-col items-center justify-center px-6"
           >
-            <button 
-              className="absolute top-8 right-6 text-brand-navy"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <X size={32} />
-            </button>
-            
-            <div className="flex flex-col gap-10 items-center">
+            <div className="flex flex-col gap-10 items-center w-full max-w-xs transition-all">
               <div className="mb-8 flex flex-col items-center leading-none gap-0.5 text-center">
-                <span className="text-3xl font-serif font-bold tracking-[0.15em] text-brand-navy">COAVE</span>
+                <span className="text-4xl font-serif font-bold tracking-[0.15em] text-brand-navy">COAVE</span>
                 <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold opacity-80">Coaching Lab</span>
               </div>
               
-              {navLinks.map((link) => (
-                <button 
-                  key={link.name} 
-                  type="button"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    // Add a tiny delay to wait for menu close/layout shift
-                    setTimeout(() => scrollToSection(link.href.replace('#', '')), 300);
-                  }}
-                  className="text-lg uppercase tracking-[0.5em] font-bold text-brand-navy hover:text-brand-gold transition-colors"
-                >
-                  {link.name}
-                </button>
-              ))}
-              <div className="mt-8 overflow-hidden rounded-sm">
-                <button 
-                  type="button"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setTimeout(() => scrollToSection('contact'), 300);
-                  }}
-                  className="px-12 py-5 bg-brand-navy text-brand-cream uppercase tracking-widest font-bold text-sm hover:bg-brand-gold transition-colors"
-                >
-                  Inquiry
-                </button>
+              <div className="flex flex-col gap-6 w-full">
+                {navLinks.map((link) => (
+                  <button 
+                    key={link.name} 
+                    type="button"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setTimeout(() => scrollToSection(link.href.replace('#', '')), 400);
+                    }}
+                    className="text-xl uppercase tracking-[0.4em] font-bold text-brand-navy hover:text-brand-gold transition-colors py-2 border-b border-brand-navy/5"
+                  >
+                    {link.name}
+                  </button>
+                ))}
               </div>
+
+              <button 
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setTimeout(() => scrollToSection('contact'), 400);
+                }}
+                className="w-full mt-6 py-5 bg-brand-navy text-brand-cream uppercase tracking-widest font-bold text-sm hover:bg-brand-gold transition-colors rounded-sm shadow-xl"
+              >
+                Inquiry
+              </button>
             </div>
             
             <div className="absolute bottom-12 flex flex-col items-center gap-6">
               <div className="flex gap-8 text-brand-navy/40">
-                <Instagram size={20} />
-                <Mail size={20} />
-                <Linkedin size={20} />
+                <Instagram size={22} className="hover:text-brand-gold transition-colors" />
+                <Mail size={22} className="hover:text-brand-gold transition-colors" />
+                <Linkedin size={22} className="hover:text-brand-gold transition-colors" />
               </div>
-              <p className="text-[9px] uppercase tracking-[0.3em] font-medium text-brand-navy/30">
+              <p className="text-[10px] uppercase tracking-[0.3em] font-medium text-brand-navy/30">
                 &copy; {new Date().getFullYear()} Coave Coaching Lab
               </p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 };
 
