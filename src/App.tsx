@@ -24,9 +24,20 @@ import { useState, useEffect, useRef, FormEvent } from "react";
 // --- Components ---
 
 const scrollToSection = (id: string) => {
+  if (id === 'home') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
   const element = document.getElementById(id);
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
+    const navbarHeight = 80;
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - navbarHeight;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
   }
 };
 
@@ -61,7 +72,7 @@ const Navbar = () => {
           className="flex items-center gap-2 group cursor-pointer"
           onClick={() => {
             scrollToSection('home');
-            setIsMenuOpen(false);
+            setTimeout(() => setIsMenuOpen(false), 100);
           }}
         >
           <div className="flex flex-col items-center leading-none gap-0.5 text-center">
@@ -90,7 +101,7 @@ const Navbar = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 border border-brand-navy text-xs uppercase tracking-widest font-semibold hover:bg-brand-navy hover:text-brand-cream transition-all"
+            className="px-6 py-2 border border-brand-navy text-xs uppercase tracking-widest font-semibold hover:bg-brand-navy hover:text-brand-cream transition-all cursor-pointer"
             onClick={() => scrollToSection('contact')}
           >
             Inquiry
@@ -98,12 +109,16 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        <button 
+          className="md:hidden text-brand-navy hover:text-brand-gold transition-colors" 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+        {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -112,25 +127,27 @@ const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-brand-cream border-b border-brand-navy/10 overflow-hidden"
           >
-            <div className="flex flex-col gap-6 p-8 items-center">
+            <div className="flex flex-col gap-8 p-10 items-center">
               {navLinks.map((link) => (
                 <button 
                   key={link.name} 
+                  type="button"
                   onClick={() => {
                     scrollToSection(link.href.replace('#', ''));
-                    setIsMenuOpen(false);
+                    setTimeout(() => setIsMenuOpen(false), 100);
                   }}
-                  className="text-sm uppercase tracking-[0.3em] font-medium"
+                  className="text-sm uppercase tracking-[0.4em] font-bold text-brand-navy hover:text-brand-gold transition-colors cursor-pointer"
                 >
                   {link.name}
                 </button>
               ))}
               <button 
+                type="button"
                 onClick={() => {
                   scrollToSection('contact');
-                  setIsMenuOpen(false);
+                  setTimeout(() => setIsMenuOpen(false), 100);
                 }}
-                className="w-full py-4 bg-brand-navy text-brand-cream uppercase tracking-widest font-bold"
+                className="w-full py-5 bg-brand-navy text-brand-cream uppercase tracking-widest font-bold text-xs hover:bg-brand-gold transition-colors rounded-sm"
               >
                 Inquiry
               </button>
