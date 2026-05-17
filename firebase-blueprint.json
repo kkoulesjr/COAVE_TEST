@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "Inquiry": {
+      "title": "Contact Inquiry",
+      "description": "Information submitted via the contact form",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the inquirer" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "service": { "type": "string", "description": "Type of service requested" },
+        "message": { "type": "string", "description": "The inquiry message" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Submission timestamp" },
+        "status": { "type": "string", "enum": ["new", "replied", "closed"], "description": "Status of the inquiry" }
+      },
+      "required": ["name", "email", "service", "message", "createdAt"]
+    },
+    "Admin": {
+      "title": "Admin User",
+      "description": "Authorized admin user record",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "Admin email" }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Collection of contact inquiries"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Restricted collection of authorized admin users"
+    }
+  }
+}
